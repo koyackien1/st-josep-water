@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, FlatList, TextInput } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,6 +19,10 @@ interface Customer {
 }
 
 export default function SequenceScreen() {
+  const [block, setBlock] = useState('');
+  const [lot, setLot] = useState('');
+  const [extension, setExtension] = useState('');
+
   // Sample data - In production, this would come from props/context/API
   const currentProject: Project = {
     name: 'Taguig Project A',
@@ -107,6 +111,11 @@ export default function SequenceScreen() {
     // Navigate to edit sequence screen
   };
 
+  const handleSearch = () => {
+    console.log('Search:', { block, lot, extension });
+    // Perform search logic
+  };
+
   const renderCustomerItem = ({ item }: { item: Customer }) => (
     <TouchableOpacity 
       style={styles.customerItem} 
@@ -162,46 +171,64 @@ export default function SequenceScreen() {
           <Text style={styles.projectInfoLabel}>Current Project</Text>
           <Text style={styles.projectInfoName}>{currentProject.name}</Text>
         </View>
-        <TouchableOpacity style={styles.backButton}>
-          <Ionicons name="arrow-back" size={16} color="#059669" />
-          <Text style={styles.backButtonText}>Back</Text>
+        <TouchableOpacity style={styles.changeProjectButton}>
+          <Text style={styles.changeProjectText}>Change Project</Text>
+          <Ionicons name="chevron-forward" size={16} color="#059669" />
         </TouchableOpacity>
       </View>
 
       {/* Sequence Range */}
-      <View style={styles.sequenceRangeCard}>
-        <View style={styles.sequenceRangeContent}>
-          <View style={styles.rangeIconContainer}>
-            <Ionicons name="list-outline" size={28} color="#059669" />
-          </View>
-          <View style={styles.rangeTextContainer}>
-            <Text style={styles.rangeLabel}>Sequence Range</Text>
-            <View style={styles.rangeValueRow}>
-              <View style={styles.rangeBox}>
-                <Text style={styles.rangeNumber}>{sequenceRange.start}</Text>
-              </View>
-              <Ionicons name="arrow-forward" size={20} color="#059669" />
-              <View style={styles.rangeBox}>
-                <Text style={styles.rangeNumber}>{sequenceRange.end}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View style={styles.totalCustomersRow}>
-          <Ionicons name="people-outline" size={18} color="#6B7280" />
-          <Text style={styles.totalCustomersText}>
-            {sequenceRange.end - sequenceRange.start + 1} Total Customers
-          </Text>
-        </View>
+      <View style={styles.sequenceRangeBar}>
+        <Text style={styles.sequenceRangeText}>Sequence Range: {sequenceRange.start} - {sequenceRange.end}</Text>
       </View>
+
+      {/* Search Section */}
+      {/* <View style={styles.searchSection}>
+        <View style={styles.blockLotExtRow}>
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>Block</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Block"
+              placeholderTextColor="#9CA3AF"
+              value={block}
+              onChangeText={setBlock}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>Lot</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Lot"
+              placeholderTextColor="#9CA3AF"
+              value={lot}
+              onChangeText={setLot}
+            />
+          </View>
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inputLabel}>Ext</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Ext"
+              placeholderTextColor="#9CA3AF"
+              value={extension}
+              onChangeText={setExtension}
+            />
+          </View>
+        </View>
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Ionicons name="search" size={18} color="#FFFFFF" />
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View> */}
 
       {/* Customer's List Header */}
       <View style={styles.listHeader}>
         <Text style={styles.listHeaderText}>Customer's List</Text>
-        <TouchableOpacity style={styles.editButton} onPress={handleEditSequence}>
+        {/* <TouchableOpacity style={styles.editButton} onPress={handleEditSequence}>
           <Ionicons name="create-outline" size={18} color="#059669" />
           <Text style={styles.editButtonText}>Edit Sequence</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Customer List */}
@@ -283,7 +310,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  backButton: {
+  changeProjectButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
@@ -292,80 +319,71 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
     borderRadius: 8,
   },
-  backButtonText: {
+  changeProjectText: {
     fontSize: 13,
     color: '#059669',
     fontWeight: '500',
   },
-  sequenceRangeCard: {
+  sequenceRangeBar: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  sequenceRangeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  searchSection: {
     backgroundColor: '#FFFFFF',
     marginHorizontal: 16,
-    marginTop: 16,
+    marginTop: 8,
     marginBottom: 8,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 8,
+    padding: 14,
     borderWidth: 1,
     borderColor: '#E5E7EB',
-    shadowColor: '#059669',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  sequenceRangeContent: {
+  blockLotExtRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginBottom: 12,
+    gap: 6,
   },
-  rangeIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#F0FDF4',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rangeTextContainer: {
+  inputWrapper: {
     flex: 1,
   },
-  rangeLabel: {
-    fontSize: 13,
-    color: '#6B7280',
+  inputLabel: {
+    fontSize: 11,
     fontWeight: '500',
-    marginBottom: 8,
+    color: '#6B7280',
+    marginBottom: 4,
   },
-  rangeValueRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  rangeBox: {
+  textInput: {
     backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#059669',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingHorizontal: 8,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    minHeight: 38,
+    fontSize: 13,
+    color: '#374151',
   },
-  rangeNumber: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#059669',
-  },
-  totalCustomersRow: {
+  searchButton: {
+    backgroundColor: '#059669',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    gap: 8,
   },
-  totalCustomersText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
+  searchButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
   },
   listHeader: {
     backgroundColor: '#F5F5F5',
